@@ -11,12 +11,12 @@ const MarketHealthTracker = () => {
   const [notificationMethod, setNotificationMethod] = useState('email');
   const [userEmail, setUserEmail] = useState('');
   const [slackWebhook, setSlackWebhook] = useState('');
-  const [weeklyUpdates, setWeeklyUpdates] = useState(false); // New state for weekly updates
+  const [weeklyUpdates, setWeeklyUpdates] = useState(false);
   const [step, setStep] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
   // African countries with their ISO codes, display names, and center points for animation
   const africanCountries = [
@@ -30,7 +30,7 @@ const MarketHealthTracker = () => {
     { name: "Cameroon", code: "CM", iso: "CMR", lat: 7.3697, lon: 12.3547 },
     { name: "Central African Republic", code: "CF", iso: "CAF", lat: 6.6111, lon: 20.9394 },
     { name: "Chad", code: "TD", iso: "TCD", lat: 15.4542, lon: 18.7322 },
-    { name: "Comoros", code: "KM", iso: "COM", lat: -11.6455, lon: 43.3333 },
+    { name: "Comoirs", code: "KM", iso: "COM", lat: -11.6455, lon: 43.3333 },
     { name: "Republic of Congo", code: "CG", iso: "COG", lat: -0.228, lon: 15.8277 },
     { name: "Democratic Republic of the Congo", code: "CD", iso: "COD", lat: -4.0383, lon: 21.7587 },
     { name: "Djibouti", code: "DJ", iso: "DJI", lat: 11.8251, lon: 42.5903 },
@@ -41,7 +41,7 @@ const MarketHealthTracker = () => {
     { name: "Ethiopia", code: "ET", iso: "ETH", lat: 9.145, lon: 40.4897 },
     { name: "Gabon", code: "GA", iso: "GAB", lat: -0.8037, lon: 11.6094 },
     { name: "Gambia", code: "GM", iso: "GMB", lat: 13.4432, lon: -15.3101 },
-    { name: "Ghana", code: "GH", iso: "GHA", lat: 7.9465, lon: -1.0232 },
+    { name: "ghana", code: "GH", iso: "GHA", lat: 7.9465, lon: -1.0232 },
     { name: "Guinea", code: "GN", iso: "GIN", lat: 9.9456, lon: -9.6966 },
     { name: "Guinea-Bissau", code: "GW", iso: "GNB", lat: 11.8037, lon: -15.1804 },
     { name: "Ivory Coast", code: "CI", iso: "CIV", lat: 7.5399, lon: -5.5471 },
@@ -224,14 +224,13 @@ const MarketHealthTracker = () => {
         </div>
         
         {!selectedCountry && (
-          <div className="absolute bottom-0.2 left-1/2 transform -translate-x-1/2 text-white text-xs text-center opacity-80 bg-black bg-opacity-50 px-3 py-1 rounded">
-            Click on Africa to select a country
+<div className="hidden md:block absolute bottom-0.5 left-1/2 transform -translate-x-1/2 text-white text-xs text-center opacity-80 bg-black bg-opacity-50 px-3 py-1 rounded">            Click on Africa to select a country
           </div>
         )}
         
         {selectedCountry && (
           <div className="absolute top-4 left-1/2 transform -translate-x-1/2 pointer-events-none z-10">
-            <div className="bg-green-500 bg-opacity-90 text-white text-sm px-4 py-2 rounded-lg font-medium shadow-lg">
+            <div className="hidden md:block bg-green-500 bg-opacity-90 text-white text-sm px-4 py-2 rounded-lg font-medium shadow-lg">
               Selected: {selectedCountry.name}
             </div>
           </div>
@@ -247,7 +246,7 @@ const MarketHealthTracker = () => {
         <div className="w-full px-8 sm:px-12 lg:px-16">
           <div className="flex justify-between items-center py-6">
             <h1 className="text-3xl font-bold text-gray-900">Africa Market Health Tracker</h1>
-            <div className="flex items-center space-x-2 text-sm text-gray-500">
+            <div className="hidden md:flex items-center space-x-2 text-sm text-gray-500">
               <Bell className="w-4 h-4" />
               <span>Stay updated on market changes</span>
             </div>
@@ -275,7 +274,7 @@ const MarketHealthTracker = () => {
           </div>
           <div className="flex justify-center mt-4 text-sm text-gray-600">
             <div className="text-center">
-              Step {step}: {step === 1 ? 'Select Country' : step === 2 ? 'Choose Health Metric' : 'Configure Report & Updates'}
+              Step {step}: {step === 1 ? 'Select Country' : step === 2 ? 'Choose Health Metric' : 'Report Generation'}
             </div>
           </div>
         </div>
@@ -349,7 +348,7 @@ const MarketHealthTracker = () => {
                   onClick={() => setStep(3)}
                   className="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-stone-400 transition-colors font-medium"
                 >
-                  Continue to Report Setup →
+                  Continue to Notifications →
                 </button>
               )}
             </div>
