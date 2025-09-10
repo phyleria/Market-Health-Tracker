@@ -229,8 +229,8 @@ const MarketHealthTracker = () => {
         )}
         
         {selectedCountry && (
-          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 pointer-events-none z-10">
-            <div className="hidden md:block bg-green-500 bg-opacity-90 text-white text-sm px-4 py-2 rounded-lg font-medium shadow-lg">
+          <div className="absolute top-2 left-1/2 transform -translate-x-1/2 -translate-y-1/6 pointer-events-none z-10">
+            <div className="hidden md:block bg-green-500 bg-opacity-90 text-white text-sm px-3 py-1 rounded-lg font-small shadow-lg">
               Selected: {selectedCountry.name}
             </div>
           </div>
@@ -294,7 +294,7 @@ const MarketHealthTracker = () => {
               <div className="text-center mt-6">
                 <button
                   onClick={() => setStep(2)}
-                  className="px-8 py-3 bg-green-500 text-white rounded-lg hover:bg-stone-400 transition-colors font-medium"
+                  className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-stone-400 transition-colors font-small"
                 >
                   Continue with {selectedCountry.name} →
                 </button>
