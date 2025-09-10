@@ -6,23 +6,211 @@ import { sendNotification } from "../utils/webhook";
 import GlobeComponent from './Globe/index';
 
 const MarketHealthTracker = () => {
-  // ... (state variables remain the same)
-  
-  // ... (africanCountries array remains the same)
-  
-  // ... (healthTypes array remains the same)
-  
-  // ... (benefitsList array remains the same)
-  
-  // ... (handleCountryClick function remains the same)
-  
-  // ... (handleHealthTypeSelect function remains the same)
-  
-  // ... (handleSubmit function remains the same)
-  
-  // ... (resetFlow function remains the same)
-  
-  // ... (SuccessPopup component remains the same)
+  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [selectedHealthType, setSelectedHealthType] = useState(null);
+  const [notificationMethod, setNotificationMethod] = useState('email');
+  const [userEmail, setUserEmail] = useState('');
+  const [slackWebhook, setSlackWebhook] = useState('');
+  const [weeklyUpdates, setWeeklyUpdates] = useState(false);
+  const [step, setStep] = useState(1);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [popupMessage, setPopupMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
+  // African countries with their ISO codes, display names, and center points for animation
+  const africanCountries = [
+    { name: "Algeria", code: "DZ", iso: "DZA", lat: 28.0339, lon: 1.6596 },
+    { name: "Angola", code: "AO", iso: "AGO", lat: -11.2027, lon: 17.8739 },
+    { name: "Benin", code: "BJ", iso: "BEN", lat: 9.3077, lon: 2.3158 },
+    { name: "Botswana", code: "BW", iso: "BWA", lat: -22.3285, lon: 24.6849 },
+    { name: "Burkina Faso", code: "BF", iso: "BFA", lat: 12.2383, lon: -1.5616 },
+    { name: "Burundi", code: "BI", iso: "BDI", lat: -3.3731, lon: 29.9189 },
+    { name: "Cabo Verde", code: "CV", iso: "CPV", lat: 16.5388, lon: -23.0418 },
+    { name: "Cameroon", code: "CM", iso: "CMR", lat: 7.3697, lon: 12.3547 },
+    { name: "Central African Republic", code: "CF", iso: "CAF", lat: 6.6111, lon: 20.9394 },
+    { name: "Chad", code: "TD", iso: "TCD", lat: 15.4542, lon: 18.7322 },
+    { name: "Comoirs", code: "KM", iso: "COM", lat: -11.6455, lon: 43.3333 },
+    { name: "Republic of Congo", code: "CG", iso: "COG", lat: -0.228, lon: 15.8277 },
+    { name: "Democratic Republic of the Congo", code: "CD", iso: "COD", lat: -4.0383, lon: 21.7587 },
+    { name: "Djibouti", code: "DJ", iso: "DJI", lat: 11.8251, lon: 42.5903 },
+    { name: "Egypt", code: "EG", iso: "EGY", lat: 26.8206, lon: 30.8025 },
+    { name: "Equatorial Guinea", code: "GQ", iso: "GNQ", lat: 1.6508, lon: 10.2679 },
+    { name: "Eritrea", code: "ER", iso: "ERI", lat: 15.1794, lon: 39.7823 },
+    { name: "Eswatini", code: "SZ", iso: "SWZ", lat: -26.5225, lon: 31.4659 },
+    { name: "Ethiopia", code: "ET", iso: "ETH", lat: 9.145, lon: 40.4897 },
+    { name: "Gabon", code: "GA", iso: "GAB", lat: -0.8037, lon: 11.6094 },
+    { name: "Gambia", code: "GM", iso: "GMB", lat: 13.4432, lon: -15.3101 },
+    { name: "ghana", code: "GH", iso: "GHA", lat: 7.9465, lon: -1.0232 },
+    { name: "Guinea", code: "GN", iso: "GIN", lat: 9.9456, lon: -9.6966 },
+    { name: "Guinea-Bissau", code: "GW", iso: "GNB", lat: 11.8037, lon: -15.1804 },
+    { name: "Ivory Coast", code: "CI", iso: "CIV", lat: 7.5399, lon: -5.5471 },
+    { name: "Kenya", code: "KE", iso: "KEN", lat: -0.0236, lon: 37.9062 },
+    { name: "Lesotho", code: "LS", iso: "LSO", lat: -29.61, lon: 28.2336 },
+    { name: "Liberia", code: "LR", iso: "LBR", lat: 6.4281, lon: -9.4295 },
+    { name: "Libya", code: "LY", iso: "LBY", lat: 26.3351, lon: 17.2283 },
+    { name: "Madagascar", code: "MG", iso: "MDG", lat: -18.7669, lon: 46.8691 },
+    { name: "Malawi", code: "MW", iso: "MWI", lat: -13.2543, lon: 34.3015 },
+    { name: "Mali", code: "ML", iso: "MLI", lat: 17.5707, lon: -3.9962 },
+    { name: "Mauritania", code: "MR", iso: "MRT", lat: 21.0079, lon: -10.9408 },
+    { name: "Mauritius", code: "MU", iso: "MUS", lat: -20.3484, lon: 57.5522 },
+    { name: "Morocco", code: "MA", iso: "MAR", lat: 31.7917, lon: -7.0926 },
+    { name: "Mozambique", code: "MZ", iso: "MOZ", lat: -18.6657, lon: 35.5296 },
+    { name: "Namibia", code: "NA", iso: "NAM", lat: -22.9576, lon: 18.4904 },
+    { name: "Niger", code: "NE", iso: "NER", lat: 17.6078, lon: 8.0817 },
+    { name: "Nigeria", code: "NG", iso: "NGA", lat: 9.082, lon: 8.675 },
+    { name: "Rwanda", code: "RW", iso: "RWA", lat: -1.9403, lon: 29.8739 },
+    { name: "Sao Tome and Principe", code: "ST", iso: "STP", lat: 0.1864, lon: 6.6131 },
+    { name: "Senegal", code: "SN", iso: "SEN", lat: 14.4974, lon: -14.4524 },
+    { name: "Seychelles", code: "SC", iso: "SYC", lat: -4.6796, lon: 55.4915 },
+    { name: "Sierra Leone", code: "SL", iso: "SLE", lat: 8.4606, lon: -11.7799 },
+    { name: "Somalia", code: "SO", iso: "SOM", lat: 5.1521, lon: 46.1996 },
+    { name: "South Africa", code: "ZA", iso: "ZAF", lat: -30.5595, lon: 22.9375 },
+    { name: "South Sudan", code: "SS", iso: "SSD", lat: 6.877, lon: 31.307 },
+    { name: "Sudan", code: "SD", iso: "SDN", lat: 12.8628, lon: 30.2176 },
+    { name: "United Republic of Tanzania", code: "TZ", iso: "TZA", lat: -6.369, lon: 34.8888 },
+    { name: "Togo", code: "TG", iso: "TGO", lat: 8.6195, lon: 0.8248 },
+    { name: "Tunisia", code: "TN", iso: "TUN", lat: 33.8869, lon: 9.5375 },
+    { name: "Uganda", code: "UG", iso: "UGA", lat: 1.3733, lon: 32.2903 },
+    { name: "Zambia", code: "ZM", iso: "ZMB", lat: -13.1339, lon: 27.8493 },
+    { name: "Zimbabwe", code: "ZW", iso: "ZWE", lat: -19.0154, lon: 29.1549 },
+  ];
+
+  const healthTypes = [
+    {
+      id: 'regulation',
+      title: 'Regulation & Compliance',
+      icon: Shield,
+      description: 'Legal framework, business registration, tax policies, and regulatory environment',
+      color: 'bg-green-50 border-green-200 text-green-800'
+    },
+    {
+      id: 'infrastructure',
+      title: 'Infrastructure Health',
+      icon: Zap,
+      description: 'Digital infrastructure, transportation, energy, and telecommunications',
+      color: 'bg-green-50 border-green-200 text-green-800'
+    },
+    {
+      id: 'economic',
+      title: 'Economic Health',
+      icon: TrendingUp,
+      description: 'GDP growth, inflation, currency stability, and market conditions',
+      color: 'bg-green-50 border-green-200 text-green-800'
+    }
+  ];
+
+  // Create benefitsList for the globe component
+  const benefitsList = [
+    {
+      country: 'Nigeria',
+      assets: {
+        'Purchases of': ['Mobile Money', 'Digital Banking', 'E-commerce'],
+        'Deposit to': ['Local Banks', 'Mobile Wallets']
+      }
+    },
+  ];
+
+  const handleCountryClick = (countryName) => {
+    const country = africanCountries.find(
+      (c) =>
+        c.name.toLowerCase() === countryName.toLowerCase() ||
+        c.code.toLowerCase() === countryName.toLowerCase() ||
+        c.iso.toLowerCase() === countryName.toLowerCase()
+    );
+
+    if (country) {
+      setSelectedCountry(country);
+    }
+  };
+
+  const handleHealthTypeSelect = (healthType) => {
+    setSelectedHealthType(healthType);
+    setStep(3);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const email = userEmail;
+    const country = selectedCountry?.name?.toLowerCase();
+    const sector = selectedHealthType?.id;
+
+    console.log("🚀 handleSubmit fired");
+    console.log("📩 Sending data:", { email, country, sector, weeklyUpdates });
+
+    try {
+      const response = await fetch("/api/webhook", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          notificationType: notificationMethod,
+          email: notificationMethod === 'email' ? email : null,
+          slackWebhook: notificationMethod === 'slack' ? slackWebhook : null,
+          country,
+          sector,
+          weeklyUpdates,
+        }),
+      });
+
+      console.log("🔎 Raw response:", response);
+
+      if (!response.ok) {
+        throw new Error(`Server error: ${response.status}`);
+      }
+
+      const result = await response.text();
+      console.log("✅ Success:", result);
+      
+      setPopupMessage(`Report generated successfully! Check your ${notificationMethod} for the report.`);
+      setShowSuccessPopup(true);
+      
+    } catch (err) {
+      console.error("❌ Error sending data:", err);
+      
+      setPopupMessage(`Error: ${err.message}`);
+      setShowSuccessPopup(true);
+    }
+  };
+
+  const resetFlow = () => {
+    setSelectedCountry(null);
+    setSelectedHealthType(null);
+    setWeeklyUpdates(false);
+    setUserEmail('');
+    setSlackWebhook('');
+    setStep(1);
+  };
+
+  const SuccessPopup = () => {
+    if (!showSuccessPopup) return null;
+
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+        <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4">
+          <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-t-2xl p-6 text-center">
+            <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle className="w-10 h-10 text-white" />
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-2">Success!</h3>
+          </div>
+          <div className="p-8">
+            <p className="text-gray-600 text-lg leading-relaxed mb-6">
+              {popupMessage}
+            </p>
+            <button
+              onClick={() => setShowSuccessPopup(false)}
+              className="w-full px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all duration-200"
+            >
+              Got it!
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   const GlobeWrapper = () => {
     return (
