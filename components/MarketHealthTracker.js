@@ -243,7 +243,7 @@ const MarketHealthTracker = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       {/* Fixed Header */}
       <div className="bg-white shadow-sm border-b">
-        <div className="w-full px-8 sm:px-12 lg:px-16">
+        <div className="w-full px-4 sm:px-12 lg:px-14">
           <div className="flex justify-between items-center py-6">
             <h1 className="text-2xl font-bold text-gray-900">Africa Market Health Tracker</h1>
             <div className="hidden md:flex items-center space-x-2 text-sm text-gray-500">
