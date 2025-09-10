@@ -115,7 +115,7 @@ export default function GlobeComponent({
 const globeReady = useCallback(() => {
   if (globeRef.current) {
     globeRef.current.controls().autoRotate = false; // stop rotation
-    globeRef.current.controls().enableZoom = true; // keep zoom disabled if you want
+    globeRef.current.controls().enableZoom = false; // keep zoom disabled if you want
     globeRef.current.pointOfView({
       lat: 4.38508,   // Africa center-ish
       lng: 18.05785,   // Africa center-ish
