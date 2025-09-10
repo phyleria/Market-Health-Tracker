@@ -13,7 +13,6 @@ const GLOBE_COLORS = {
   SELECTED: "#8B4513",    // blue selected
 };
 
-
 const COUNTRY_FLAGS = {
   DZ: "🇩🇿", // Algeria
   AO: "🇦🇴", // Angola
@@ -71,7 +70,6 @@ const COUNTRY_FLAGS = {
   ZW: "🇿🇼", // Zimbabwe
 };
 
-
 export default function GlobeComponent({
   benefitsList,
   onCountrySelect,
@@ -82,6 +80,7 @@ export default function GlobeComponent({
   const [dimensions, setDimensions] = useState({ width: 400, height: 400 });
   const globeRef = useRef(null);
   const [mounted, setMounted] = useState(false);
+  const containerRef = useRef(null);
 
   // Prevent hydration mismatch
   useEffect(() => {
@@ -90,40 +89,58 @@ export default function GlobeComponent({
 
   const handleResize = useCallback(() => {
     try {
-      setDimensions({
-        width: window.innerWidth - 48,
-        height:
-          window.innerWidth < 650
-            ? window.innerHeight * 0.4
-            : window.innerHeight * 0.6,
-      });
+      if (containerRef.current) {
+        const containerWidth = containerRef.current.offsetWidth;
+        const containerHeight = containerRef.current.offsetHeight;
+        
+        // Use the container's dimensions instead of window dimensions
+        setDimensions({
+          width: containerWidth,
+          height: containerHeight,
+        });
+      }
     } catch (error) {
       console.error("Error resizing globe:", error);
+      // Fallback to reasonable defaults
+      setDimensions({
+        width: 400,
+        height: 400,
+      });
     }
   }, []);
 
   useEffect(() => {
-
-
     if (typeof window !== "undefined") {
       handleResize();
       window.addEventListener("resize", handleResize);
-      return () => window.removeEventListener("resize", handleResize);
+      
+      // Use ResizeObserver for better container size tracking
+      let resizeObserver;
+      if (containerRef.current) {
+        resizeObserver = new ResizeObserver(handleResize);
+        resizeObserver.observe(containerRef.current);
+      }
+      
+      return () => {
+        window.removeEventListener("resize", handleResize);
+        if (resizeObserver) {
+          resizeObserver.disconnect();
+        }
+      };
     }
-  }, [handleResize, benefitsList]);
+  }, [handleResize]);
 
-const globeReady = useCallback(() => {
-  if (globeRef.current) {
-    globeRef.current.controls().autoRotate = false; // stop rotation
-    globeRef.current.controls().enableZoom = false; // keep zoom disabled if you want
-    globeRef.current.pointOfView({
-      lat: 4.38508,   // Africa center-ish
-      lng: 18.05785,   // Africa center-ish
-      altitude: 1.8,
-    });
-  }
-}, []);
-
+  const globeReady = useCallback(() => {
+    if (globeRef.current) {
+      globeRef.current.controls().autoRotate = false; // stop rotation
+      globeRef.current.controls().enableZoom = false; // keep zoom disabled if you want
+      globeRef.current.pointOfView({
+        lat: 4.38508,   // Africa center-ish
+        lng: 18.05785,   // Africa center-ish
+        altitude: 1.8,
+      });
+    }
+  }, []);
 
   const handlePolygonClick = useCallback(
     (d) => {
@@ -197,10 +214,16 @@ const globeReady = useCallback(() => {
   if (!mounted) return null; // prevent hydration issues
 
   return (
-    <section className="p-6 relative m-auto w-full h-full flex items-center justify-center">
+    <section className="p-3 relative m-auto w-full h-full flex items-center justify-center">
       {hoverD && nameComponent()}
       {hoverD && hoverData && dataComponent(hoverData)}
-      <div className="w-full h-full flex items-center justify-center">
+      
+      {/* Container div with ref for proper sizing */}
+      <div 
+        ref={containerRef}
+        className="w-full h-full flex items-center justify-center"
+        style={{ minHeight: '300px', maxHeight: '500px' }}
+      >
         <Globe
           backgroundColor="#ffffff00"
           width={dimensions.width}
@@ -218,7 +241,6 @@ const globeReady = useCallback(() => {
           polygonStrokeColor={() => GLOBE_COLORS.STROKE}
           onPolygonHover={(d) => {
             setHoverD(d);
-           
           }}
           onPolygonClick={handlePolygonClick}
           polygonsTransitionDuration={300}
