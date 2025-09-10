@@ -3,7 +3,7 @@ export async function POST(req) {
   try {
     const body = await req.json();
 
-    const response = await fetch("https://invcgroup32.app.n8n.cloud/webhook/540c447b-5924-4043-a724-757fa3f1be56", {
+    const response = await fetch("https://invcgroup32.app.n8n.cloud/webhook/9d601821-68f0-4be8-af96-8effb3792bce", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
