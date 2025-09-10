@@ -77,7 +77,7 @@ export default function GlobeComponent({
 }) {
   const [hoverD, setHoverD] = useState();
   const [hoverData, setHoverData] = useState();
-  const [dimensions, setDimensions] = useState({ width: 400, height: 400 });
+  const [dimensions, setDimensions] = useState({ width: 300, height: 300 });
   const globeRef = useRef(null);
   const [mounted, setMounted] = useState(false);
   const containerRef = useRef(null);
@@ -89,54 +89,50 @@ export default function GlobeComponent({
 
   const handleResize = useCallback(() => {
     try {
-      if (containerRef.current) {
-        const containerWidth = containerRef.current.offsetWidth;
-        const containerHeight = containerRef.current.offsetHeight;
+      if (containerRef.current && containerRef.current.parentElement) {
+        const container = containerRef.current.parentElement;
+        const availableWidth = container.offsetWidth;
+        const availableHeight = container.offsetHeight;
         
-        // Use the container's dimensions instead of window dimensions
+        // Use 90% of available space to prevent overflow
+        const size = Math.min(availableWidth, availableHeight) * 0.9;
+        
         setDimensions({
-          width: containerWidth,
-          height: containerHeight,
+          width: Math.min(size, 500), // Cap at 500px
+          height: Math.min(size, 500), // Cap at 500px
         });
       }
     } catch (error) {
       console.error("Error resizing globe:", error);
       // Fallback to reasonable defaults
       setDimensions({
-        width: 400,
-        height: 400,
+        width: 300,
+        height: 300,
       });
     }
   }, []);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      handleResize();
+      // Initial resize after a small delay to ensure DOM is ready
+      const timeoutId = setTimeout(handleResize, 100);
+      
       window.addEventListener("resize", handleResize);
       
-      // Use ResizeObserver for better container size tracking
-      let resizeObserver;
-      if (containerRef.current) {
-        resizeObserver = new ResizeObserver(handleResize);
-        resizeObserver.observe(containerRef.current);
-      }
-      
       return () => {
+        clearTimeout(timeoutId);
         window.removeEventListener("resize", handleResize);
-        if (resizeObserver) {
-          resizeObserver.disconnect();
-        }
       };
     }
   }, [handleResize]);
 
   const globeReady = useCallback(() => {
     if (globeRef.current) {
-      globeRef.current.controls().autoRotate = false; // stop rotation
-      globeRef.current.controls().enableZoom = false; // keep zoom disabled if you want
+      globeRef.current.controls().autoRotate = false;
+      globeRef.current.controls().enableZoom = false;
       globeRef.current.pointOfView({
-        lat: 4.38508,   // Africa center-ish
-        lng: 18.05785,   // Africa center-ish
+        lat: 4.38508,
+        lng: 18.05785,
         altitude: 1.8,
       });
     }
@@ -211,49 +207,50 @@ export default function GlobeComponent({
     );
   };
 
-  if (!mounted) return null; // prevent hydration issues
+  if (!mounted) return null;
 
   return (
-    <section className="p-3 relative m-auto w-full h-full flex items-center justify-center">
+    <section className="relative m-auto w-full h-full flex items-center justify-center p-2">
       {hoverD && nameComponent()}
       {hoverD && hoverData && dataComponent(hoverData)}
       
-      {/* Container div with ref for proper sizing */}
-      <div 
-        ref={containerRef}
-        className="w-full h-full flex items-center justify-center"
-        style={{ minHeight: '300px', maxHeight: '500px' }}
-      >
-        <Globe
-          backgroundColor="#ffffff00"
-          width={dimensions.width}
-          height={dimensions.height}
-          rendererConfig={{ antialias: true, alpha: true }}
-          ref={globeRef}
-          onGlobeReady={globeReady}
-          polygonsData={countries.features.filter(
-            (d) => d.properties.iso_a2 !== "AQ"
-          )}
-          polygonCapColor={(d) => {
-            if (isCountrySelected(d)) return GLOBE_COLORS.SELECTED;
-            return d === hoverD ? GLOBE_COLORS.HOVER : GLOBE_COLORS.DEFAULT;
-          }}
-          polygonStrokeColor={() => GLOBE_COLORS.STROKE}
-          onPolygonHover={(d) => {
-            setHoverD(d);
-          }}
-          onPolygonClick={handlePolygonClick}
-          polygonsTransitionDuration={300}
-          polygonSideColor={() => GLOBE_COLORS.SIDE}
-          polygonAltitude={0.01}
-          globeMaterial={new THREE.MeshPhongMaterial({
-            color: "white",
-            opacity: 0.99,
-            transparent: true,
-          })}
-          atmosphereColor="white"
-          atmosphereAltitude={0.2}
-        />
+      {/* Container with constrained sizing */}
+      <div className="w-full max-w-[500px] h-[300px] sm:h-[400px] md:h-[450px] flex items-center justify-center mx-auto">
+        <div 
+          ref={containerRef}
+          className="w-full h-full flex items-center justify-center"
+        >
+          <Globe
+            backgroundColor="#ffffff00"
+            width={dimensions.width}
+            height={dimensions.height}
+            rendererConfig={{ antialias: true, alpha: true }}
+            ref={globeRef}
+            onGlobeReady={globeReady}
+            polygonsData={countries.features.filter(
+              (d) => d.properties.iso_a2 !== "AQ"
+            )}
+            polygonCapColor={(d) => {
+              if (isCountrySelected(d)) return GLOBE_COLORS.SELECTED;
+              return d === hoverD ? GLOBE_COLORS.HOVER : GLOBE_COLORS.DEFAULT;
+            }}
+            polygonStrokeColor={() => GLOBE_COLORS.STROKE}
+            onPolygonHover={(d) => {
+              setHoverD(d);
+            }}
+            onPolygonClick={handlePolygonClick}
+            polygonsTransitionDuration={300}
+            polygonSideColor={() => GLOBE_COLORS.SIDE}
+            polygonAltitude={0.01}
+            globeMaterial={new THREE.MeshPhongMaterial({
+              color: "white",
+              opacity: 0.99,
+              transparent: true,
+            })}
+            atmosphereColor="white"
+            atmosphereAltitude={0.2}
+          />
+        </div>
       </div>
     </section>
   );
