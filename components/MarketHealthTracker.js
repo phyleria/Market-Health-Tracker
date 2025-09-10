@@ -214,7 +214,7 @@ const MarketHealthTracker = () => {
 
   const GlobeWrapper = () => {
     return (
-      <div className="relative w-full aspect-square md:max-w-[600px] mx-auto">
+      <div className="relative w-full aspect-square md:max-w-[490px] mx-auto">
         <div className="w-full h-full flex items-center justify-center">
           <GlobeComponent 
             benefitsList={benefitsList}
@@ -224,7 +224,7 @@ const MarketHealthTracker = () => {
         </div>
         
         {!selectedCountry && (
-<div className="hidden md:block absolute bottom-0.5 left-1/2 transform -translate-x-1/2 text-white text-xs text-center opacity-80 bg-black bg-opacity-50 px-3 py-1 rounded">            Click on Africa to select a country
+<div className="hidden md:block absolute bottom-1 left-1/2 transform -translate-x-1/2 text-white text-xs text-center opacity-80 bg-black bg-opacity-50 px-2 py-0.5 rounded">            Click on Africa to select a country
           </div>
         )}
         
@@ -245,7 +245,7 @@ const MarketHealthTracker = () => {
       <div className="bg-white shadow-sm border-b">
         <div className="w-full px-8 sm:px-12 lg:px-16">
           <div className="flex justify-between items-center py-6">
-            <h1 className="text-3xl font-bold text-gray-900">Africa Market Health Tracker</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Africa Market Health Tracker</h1>
             <div className="hidden md:flex items-center space-x-2 text-sm text-gray-500">
               <Bell className="w-4 h-4" />
               <span>Stay updated on market changes</span>
@@ -282,11 +282,11 @@ const MarketHealthTracker = () => {
         {/* Step 1: Country Selection */}
         {step === 1 && (
           <div className="bg-white rounded-lg shadow-lg p-9">
-            <div className="text-center mb-0.5">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Select an African Market</h2>
+            <div className="text-center mb-1">
+              <h2 className="text-1xl font-bold text-gray-900 mb-2">Select an African Market</h2>
             </div>
 
-            <div className="mb-4">
+            <div className="mb-2">
               <GlobeWrapper />
             </div>
 
