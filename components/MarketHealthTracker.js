@@ -229,7 +229,7 @@ const MarketHealthTracker = () => {
         )}
         
         {selectedCountry && (
-          <div className="absolute top-2 left-1/2 transform -translate-x-1/2 -translate-y-1/6 pointer-events-none z-10">
+          <div className="absolute top-2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none z-10">
             <div className="hidden md:block bg-green-500 bg-opacity-90 text-white text-sm px-3 py-1 rounded-lg font-small shadow-lg">
               Selected: {selectedCountry.name}
             </div>
@@ -240,10 +240,10 @@ const MarketHealthTracker = () => {
   };
 
   return (
-    <div className="h-screen bg-gradient-to-br from-slate-50 to-slate-100 overflow-hidden flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       {/* Fixed Header */}
       <div className="bg-white shadow-sm border-b">
-        <div className="w-full px-4 sm:px-12 lg:px-14">
+        <div className="w-full px-8 sm:px-12 lg:px-16">
           <div className="flex justify-between items-center py-6">
             <h1 className="text-2xl font-bold text-gray-900">Africa Market Health Tracker</h1>
             <div className="hidden md:flex items-center space-x-2 text-sm text-gray-500">
@@ -281,8 +281,8 @@ const MarketHealthTracker = () => {
 
         {/* Step 1: Country Selection */}
         {step === 1 && (
-          <div className="bg-white rounded-lg shadow-lg p-4 px-18">
-            <div className="text-center mb-1">
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <div className="text-center mb-0.5">
               <h2 className="text-1xl font-bold text-gray-900 mb-2">Select an African Market</h2>
             </div>
 
