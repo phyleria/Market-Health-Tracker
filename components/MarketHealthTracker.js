@@ -68,7 +68,7 @@ const MarketHealthTracker = () => {
     { name: "South Africa", code: "ZA", iso: "ZAF", lat: -30.5595, lon: 22.9375 },
     { name: "South Sudan", code: "SS", iso: "SSD", lat: 6.877, lon: 31.307 },
     { name: "Sudan", code: "SD", iso: "SDN", lat: 12.8628, lon: 30.2176 },
-    { name: "United Republic of Tanzania", code: "TZ", iso: "TZA", lat: -6.369, lon: 34.8888 },
+    { name: "Tanzania", code: "TZ", iso: "TZA", lat: -6.369, lon: 34.8888 },
     { name: "Togo", code: "TG", iso: "TGO", lat: 8.6195, lon: 0.8248 },
     { name: "Tunisia", code: "TN", iso: "TUN", lat: 33.8869, lon: 9.5375 },
     { name: "Uganda", code: "UG", iso: "UGA", lat: 1.3733, lon: 32.2903 },
@@ -184,34 +184,39 @@ const MarketHealthTracker = () => {
     setStep(1);
   };
 
-  const SuccessPopup = () => {
-    if (!showSuccessPopup) return null;
+const SuccessPopup = () => {
+  if (!showSuccessPopup) return null;
 
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
-        <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4">
-          <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-t-2xl p-6 text-center">
-            <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <CheckCircle className="w-10 h-10 text-white" />
-            </div>
-            <h3 className="text-2xl font-bold text-white mb-2">Success!</h3>
-          </div>
-          <div className="p-8">
-            <p className="text-gray-600 text-lg leading-relaxed mb-6">
-              {popupMessage}
-            </p>
-            <button
-              onClick={() => setShowSuccessPopup(false)}
-              className="w-full px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all duration-200"
-            >
-              Got it!
-            </button>
-          </div>
-        </div>
-      </div>
-    );
+  const handleGotIt = () => {
+    setShowSuccessPopup(false);
+    // Redirect to dashboard with the selected country and health type
+    window.location.href = `/dashboard?country=${selectedCountry?.name}&type=${selectedHealthType?.id}`;
   };
 
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4">
+        <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-t-2xl p-6 text-center">
+          <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <CheckCircle className="w-10 h-10 text-white" />
+          </div>
+          <h3 className="text-2xl font-bold text-white mb-2">Success!</h3>
+        </div>
+        <div className="p-8">
+          <p className="text-gray-600 text-lg leading-relaxed mb-6">
+            {popupMessage}
+          </p>
+          <button
+            onClick={handleGotIt}
+            className="w-full px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all duration-200"
+          >
+            Got it!
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
   const GlobeWrapper = () => {
     return (
       <div className="relative w-full aspect-square md:max-w-[490px] mx-auto">
