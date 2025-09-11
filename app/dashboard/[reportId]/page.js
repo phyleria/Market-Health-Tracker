@@ -112,37 +112,44 @@ function ReportDetailContent() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-6">
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => router.back()}
-                className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
-              >
-                <ArrowLeft className="w-5 h-5 mr-2" />
-                Back
-              </button>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Market Health Dashboard</h1>
-                <p className="text-gray-600">
-                  {typeDetails.title} for {displayCountry}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <button className="flex items-center px-4 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors">
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Refresh Data
-              </button>
-              <button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                <Download className="w-4 h-4 mr-2" />
-                Export Report
-              </button>
-            </div>
-          </div>
+  {/* Header */}
+<div className="bg-white shadow-sm border-b">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="flex flex-col md:flex-row md:items-center md:justify-between py-4 gap-4">
+      {/* Left side: back + title */}
+      <div className="flex items-start md:items-center space-x-3">
+        <button
+          onClick={() => router.back()}
+          className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+        >
+          <ArrowLeft className="w-5 h-5 mr-2" />
+          Back
+        </button>
+        <div>
+          <h1 className="text-xl md:text-2xl font-bold text-gray-900">
+            Market Health Dashboard
+          </h1>
+          <p className="text-gray-600 text-sm md:text-base">
+            {typeDetails.title} for {displayCountry}
+          </p>
         </div>
       </div>
+
+      {/* Right side: action buttons */}
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+        <button className="flex items-center justify-center px-3 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors border rounded-lg">
+          <RefreshCw className="w-4 h-4 mr-2" />
+          Refresh
+        </button>
+        <button className="flex items-center justify-center px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          <Download className="w-4 h-4 mr-2" />
+          Export
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
       {/* Dashboard Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
