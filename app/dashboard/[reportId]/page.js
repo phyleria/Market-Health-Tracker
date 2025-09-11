@@ -111,8 +111,7 @@ function ReportDetailContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      {/* Header */}
-  {/* Header */}
+{/* Header */}
 <div className="bg-white shadow-sm border-b">
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div className="flex flex-col md:flex-row md:items-center md:justify-between py-4 gap-4">
@@ -137,11 +136,30 @@ function ReportDetailContent() {
 
       {/* Right side: action buttons */}
       <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
-        <button className="flex items-center justify-center px-3 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors border rounded-lg">
+        {/* Refresh button */}
+        <button
+          onClick={() => window.location.reload()}
+          className="flex items-center justify-center px-3 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors border rounded-lg"
+        >
           <RefreshCw className="w-4 h-4 mr-2" />
           Refresh
         </button>
-        <button className="flex items-center justify-center px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+
+        {/* Export button */}
+        <button
+          onClick={() => {
+            if (!report) return;
+
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(report, null, 2));
+            const downloadAnchor = document.createElement("a");
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `${report.title.replace(/\s+/g, "_")}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+          }}
+          className="flex items-center justify-center px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
           <Download className="w-4 h-4 mr-2" />
           Export
         </button>
@@ -149,6 +167,7 @@ function ReportDetailContent() {
     </div>
   </div>
 </div>
+
 
 
       {/* Dashboard Content */}

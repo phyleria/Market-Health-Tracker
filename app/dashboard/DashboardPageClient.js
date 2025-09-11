@@ -174,10 +174,28 @@ export default function DashboardPageClient() {
                     <span>View Details</span>
                     <ArrowRight className="w-4 h-4 ml-1" />
                   </button>
-                  <button className="flex items-center justify-center text-gray-600 hover:text-gray-800 transition-colors text-sm w-full sm:w-auto">
-                    <Download className="w-4 h-4 mr-1" />
-                    <span>Download</span>
-                  </button>
+                  <button
+  onClick={(e) => {
+    e.stopPropagation(); // prevent triggering "view details"
+    const dataStr =
+      "data:text/json;charset=utf-8," +
+      encodeURIComponent(JSON.stringify(report, null, 2));
+    const downloadAnchor = document.createElement("a");
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute(
+      "download",
+      `${report.title.replace(/\s+/g, "_")}.json`
+    );
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+  }}
+  className="flex items-center justify-center text-gray-600 hover:text-gray-800 transition-colors text-sm w-full sm:w-auto"
+>
+  <Download className="w-4 h-4 mr-1" />
+  <span>Download</span>
+</button>
+
                 </div>
               </div>
             ))}
