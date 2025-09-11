@@ -14,9 +14,31 @@ const MarketHealthTracker = () => {
   const [weeklyUpdates, setWeeklyUpdates] = useState(false);
   const [step, setStep] = useState(1);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
-  const [popupMessage, setPopupMessage] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
+ const [popupMessage, setPopupMessage] = useState("");
+  const [showWelcomePopup, setShowWelcomePopup] = useState(true);
+
+  const WelcomePopup = () => {
+    if (!showWelcomePopup) return null;
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+        <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full mx-4 text-center p-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            Welcome to Africa Market Health Tracker!
+          </h2>
+          <p className="text-gray-600 mb-6">
+            Explore real-time insights into Africa’s markets. <br />
+            To get started click on a country on the African map.
+          </p>
+          <button
+            onClick={() => setShowWelcomePopup(false)}
+            className="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-300 transition"
+          >
+            Got it!
+          </button>
+        </div>
+      </div>
+    );
+  };
 
   // African countries with their ISO codes, display names, and center points for animation
   const africanCountries = [
@@ -148,7 +170,6 @@ const MarketHealthTracker = () => {
         body: JSON.stringify({
           notificationType: notificationMethod,
           email: notificationMethod === 'email' ? email : null,
-          slackWebhook: notificationMethod === 'slack' ? slackWebhook : null,
           country,
           sector,
           weeklyUpdates,
@@ -190,7 +211,7 @@ const SuccessPopup = () => {
   const handleGotIt = () => {
     setShowSuccessPopup(false);
     // Redirect to dashboard with the selected country and health type
-    window.location.href = `/dashboard?country=${selectedCountry?.name}&type=${selectedHealthType?.id}`;
+    window.location.href = "/";
   };
 
   return (
@@ -218,31 +239,34 @@ const SuccessPopup = () => {
   );
 };
   const GlobeWrapper = () => {
-    return (
-      <div className="relative w-full aspect-square md:max-w-[490px] mx-auto">
-        <div className="w-full h-full flex items-center justify-center">
-          <GlobeComponent 
-            benefitsList={benefitsList}
-            onCountrySelect={handleCountryClick}
-            selectedCountry={selectedCountry}
-          />
+  return (
+    <div className="relative w-full aspect-square md:max-w-[490px] mx-auto">
+      {/* Globe sits cleanly without any surrounding box */}
+      <GlobeComponent 
+        benefitsList={benefitsList}
+        onCountrySelect={handleCountryClick}
+        selectedCountry={selectedCountry}
+      />
+
+      {/* Small helper text before selection */}
+      {!selectedCountry && (
+        <div className="hidden md:block absolute bottom-1 left-1/2 transform -translate-x-1/2 text-white text-xs text-center opacity-80">
+          Click on Africa to select a country
         </div>
-        
-        {!selectedCountry && (
-<div className="hidden md:block absolute bottom-1 left-1/2 transform -translate-x-1/2 text-white text-xs text-center opacity-80 bg-black bg-opacity-50 px-2 py-0.5 rounded">            Click on Africa to select a country
+      )}
+
+      {/* Selected country label */}
+      {/* {selectedCountry && (
+        <div className="absolute top-2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none z-10">
+          <div className="hidden md:block bg-green-500 bg-opacity-90 text-white text-sm px-3 py-1 rounded-lg shadow-lg">
+            Selected: {selectedCountry.name}
           </div>
-        )}
-        
-        {selectedCountry && (
-          <div className="absolute top-2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none z-10">
-            <div className="hidden md:block bg-green-500 bg-opacity-90 text-white text-sm px-3 py-1 rounded-lg font-small shadow-lg">
-              Selected: {selectedCountry.name}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
+        </div>
+      )} */}
+    </div>
+  );
+};
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
@@ -277,26 +301,23 @@ const SuccessPopup = () => {
               </div>
             ))}
           </div>
-          <div className="flex justify-center mt-4 text-sm text-gray-600">
-            <div className="text-center">
-              Step {step}: {step === 1 ? 'Select Country' : step === 2 ? 'Choose Health Metric' : 'Report Generation'}
-            </div>
-          </div>
         </div>
 
         {/* Step 1: Country Selection */}
         {step === 1 && (
           <div className="bg-white rounded-lg shadow-lg p-6">
-            <div className="text-center mb-0.5">
-              <h2 className="text-1xl font-bold text-gray-900 mb-2">Select an African Market</h2>
+            <div className="text-center mb-0.5 mt-1">
+       <h2 className="text-xl font-bold text-gray-900">
+                Select an African Country
+              </h2>
             </div>
 
-            <div className="mb-2">
+            <div className="mt-0.5">
               <GlobeWrapper />
             </div>
 
             {selectedCountry && (
-              <div className="text-center mt-6">
+              <div className="text-center mt-1">
                 <button
                   onClick={() => setStep(2)}
                   className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-stone-400 transition-colors font-small"
@@ -364,96 +385,32 @@ const SuccessPopup = () => {
         {step === 3 && (
           <div className="bg-white rounded-lg shadow-lg p-8">
             <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Configure Report & Updates</h2>
-              <p className="text-gray-600">Set up your report delivery and optional weekly updates</p>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Configure Updates</h2>
+        
             </div>
 
             <div className="max-w-2xl mx-auto">
               {/* Report Generation Info */}
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl mb-8 border border-blue-200">
-                <div className="flex items-start space-x-4">
-                  <div className="flex-shrink-0 mt-1">
-                    <FileText className="w-6 h-6 text-blue-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-blue-900 mb-2">Report Generation</h4>
-                    <p className="text-blue-700 leading-relaxed">
-                      Generate your comprehensive {selectedHealthType?.title.toLowerCase()} report for {selectedCountry?.name}
-                    </p>
-                  </div>
-                </div>
-              </div>
+            
+            
+  
 
               {/* Form Container */}
               <div className="space-y-8">
                 {/* Notification Method Selection */}
                 <div>
                   <label className="block text-lg font-semibold text-gray-800 mb-4">
-                    Where would you like to receive your report?
+                    Enter your email to receive updates
                   </label>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <label className={`relative flex items-center p-5 border-2 rounded-xl cursor-pointer transition-all duration-200 ${
-                      notificationMethod === 'email' 
-                        ? 'border-blue-500 bg-blue-50 shadow-md' 
-                        : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                    }`}>
-                      <input
-                        type="radio"
-                        value="email"
-                        checked={notificationMethod === 'email'}
-                        onChange={(e) => setNotificationMethod(e.target.value)}
-                        className="sr-only"
-                      />
-                      <div className="flex items-center space-x-4">
-                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                          notificationMethod === 'email' 
-                            ? 'border-blue-500 bg-blue-500' 
-                            : 'border-gray-300'
-                        }`}>
-                          {notificationMethod === 'email' && (
-                            <div className="w-2 h-2 rounded-full bg-white"></div>
-                          )}
-                        </div>
-                        <Mail className="w-6 h-6 text-gray-600" />
-                        <span className="font-medium text-gray-900">Via Email</span>
-                      </div>
-                    </label>
+                  
                     
-                    <label className={`relative flex items-center p-5 border-2 rounded-xl cursor-pointer transition-all duration-200 ${
-                      notificationMethod === 'slack' 
-                        ? 'border-blue-500 bg-blue-50 shadow-md' 
-                        : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                    }`}>
-                      <input
-                        type="radio"
-                        value="slack"
-                        checked={notificationMethod === 'slack'}
-                        onChange={(e) => setNotificationMethod(e.target.value)}
-                        className="sr-only"
-                      />
-                      <div className="flex items-center space-x-4">
-                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                          notificationMethod === 'slack' 
-                            ? 'border-blue-500 bg-blue-500' 
-                            : 'border-gray-300'
-                        }`}>
-                          {notificationMethod === 'slack' && (
-                            <div className="w-2 h-2 rounded-full bg-white"></div>
-                          )}
-                        </div>
-                        <MessageSquare className="w-6 h-6 text-gray-600" />
-                        <span className="font-medium text-gray-900">Via Slack</span>
-                      </div>
-                    </label>
-                  </div>
+        
                 </div>
 
                 {/* Email Input */}
                 {notificationMethod === 'email' && (
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-3">
-                      Email Address
-                    </label>
+                    
                     <input
                       type="email"
                       value={userEmail}
@@ -465,26 +422,7 @@ const SuccessPopup = () => {
                   </div>
                 )}
 
-                {/* Slack Input */}
-                {notificationMethod === 'slack' && (
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-3">
-                      Slack Webhook URL
-                    </label>
-                    <input
-                      type="url"
-                      value={slackWebhook}
-                      onChange={(e) => setSlackWebhook(e.target.value)}
-                      placeholder="https://hooks.slack.com/services/..."
-                      className="w-full px-4 py-4 text-lg border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                      required
-                    />
-                    <p className="text-sm text-gray-500 mt-2 ml-1">
-                      Get your webhook URL from your Slack workspace settings
-                    </p>
-                  </div>
-                )}
-
+               
                 {/* Weekly Updates Checkbox */}
                 <div className="border-t pt-6">
                   <label className={`flex items-start space-x-4 p-6 border-2 rounded-xl cursor-pointer transition-all duration-200 ${
@@ -539,7 +477,7 @@ const SuccessPopup = () => {
                     className="px-10 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-lg font-semibold rounded-xl hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all duration-200 flex items-center shadow-lg hover:shadow-xl order-1 sm:order-2"
                   >
                     <FileText className="w-5 h-5 mr-3" />
-                    Generate Report
+                    Receive update
                   </button>
                 </div>
               </div>
@@ -549,6 +487,7 @@ const SuccessPopup = () => {
       </div>
 
       {/* Success Popup */}
+          <WelcomePopup />
       <SuccessPopup />
     </div>
   );

@@ -98,16 +98,16 @@ export default function GlobeComponent({
         const size = Math.min(availableWidth, availableHeight) * 0.9;
         
         setDimensions({
-          width: Math.min(size, 500), // Cap at 500px
-          height: Math.min(size, 500), // Cap at 500px
+          width: Math.min(size), // Cap at 500px
+          height: Math.min(size), // Cap at 500px
         });
       }
     } catch (error) {
       console.error("Error resizing globe:", error);
       // Fallback to reasonable defaults
       setDimensions({
-        width: 300,
-        height: 300,
+        width: 400,
+        height: 400,
       });
     }
   }, []);
@@ -215,7 +215,7 @@ export default function GlobeComponent({
       {hoverD && hoverData && dataComponent(hoverData)}
       
       {/* Container with constrained sizing */}
-      <div className="w-full max-w-[500px] h-[300px] sm:h-[400px] md:h-[450px] flex items-center justify-center mx-auto">
+      <div className="w-full max-w-[800px] h-[300px] sm:h-[400px] md:h-[450px] flex items-center justify-center mx-auto">
         <div 
           ref={containerRef}
           className="w-full h-full flex items-center justify-center"
