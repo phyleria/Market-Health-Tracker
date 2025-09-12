@@ -51,7 +51,7 @@ export default function DashboardPage() {
 
       {!loading && reports.length === 0 && (
         <p>
-          No reports yet for <b>{email}</b>. Please check again in a minute after your confirmation email arrives.
+          No reports yet for <b>{email}</b>. Please check again in a minute after your email arrives.
         </p>
       )}
 
