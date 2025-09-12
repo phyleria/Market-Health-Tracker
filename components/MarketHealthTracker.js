@@ -221,10 +221,30 @@ const WelcomePopup = () => {
 const SuccessPopup = () => {
   if (!showSuccessPopup) return null;
 
-  const handleGotIt = () => {
-    setShowSuccessPopup(false);
-    // Redirect to dashboard with the selected country and health type
-    window.location.href = "/";
+  const handleGotIt = async () => {
+    try {
+      // 🔗 Call second webhook to fetch reports
+      const response = await fetch("/api/webhook/reports", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: userEmail }), // pass the email used earlier
+      });
+
+      if (!response.ok) {
+        throw new Error(`Reports API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("📊 Reports fetched:", data);
+
+      // ✅ Redirect with email param (or even reports data if needed)
+      window.location.href = `/dashboard?email=${encodeURIComponent(userEmail)}`;
+    } catch (error) {
+      console.error("❌ Failed to fetch reports:", error);
+      alert("Could not load reports, please try again.");
+    }
   };
 
   return (
@@ -251,6 +271,7 @@ const SuccessPopup = () => {
     </div>
   );
 };
+
   const GlobeWrapper = () => {
   return (
     <div className="relative w-full aspect-square md:max-w-[490px] mx-auto">
