@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Mail, MessageSquare, Bell, TrendingUp, Shield, Zap, MapPin, Download, FileText, CheckCircle } from 'lucide-react';
 import { sendNotification } from "../utils/webhook";
 import GlobeComponent from './Globe/index';
@@ -15,30 +15,43 @@ const MarketHealthTracker = () => {
   const [step, setStep] = useState(1);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
  const [popupMessage, setPopupMessage] = useState("");
-  const [showWelcomePopup, setShowWelcomePopup] = useState(true);
+  const [showWelcomePopup, setShowWelcomePopup] = useState(false);
 
-  const WelcomePopup = () => {
-    if (!showWelcomePopup) return null;
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
-        <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full mx-4 text-center p-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            Welcome to Africa Market Health Tracker!
-          </h2>
-          <p className="text-gray-600 mb-6">
-            Explore real-time insights into Africa’s markets. <br />
-            To get started click on a country on the African map.
-          </p>
-          <button
-            onClick={() => setShowWelcomePopup(false)}
-            className="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-300 transition"
-          >
-            Got it!
-          </button>
-        </div>
-      </div>
-    );
+useEffect(() => {
+  const hasSeenPopup = localStorage.getItem("hasSeenWelcomePopup");
+  if (!hasSeenPopup) {
+    setShowWelcomePopup(true);
+  }
+}, []);
+
+const WelcomePopup = () => {
+  if (!showWelcomePopup) return null;
+
+  const handleGotIt = () => {
+    setShowWelcomePopup(false);
+    localStorage.setItem("hasSeenWelcomePopup", "true"); // ✅ persist dismissal
   };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full mx-4 text-center p-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">
+          Welcome to Africa Market Health Tracker!
+        </h2>
+        <p className="text-gray-600 mb-6">
+          Get real-time insights into African markets. <br />
+          To get started click on a country on the African map.
+        </p>
+        <button
+          onClick={handleGotIt}
+          className="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-300 transition"
+        >
+          Got it!
+        </button>
+      </div>
+    </div>
+  );
+};
 
   // African countries with their ISO codes, display names, and center points for animation
   const africanCountries = [
@@ -474,7 +487,7 @@ const SuccessPopup = () => {
                       (notificationMethod === 'email' && !userEmail) ||
                       (notificationMethod === 'slack' && !slackWebhook)
                     }
-                    className="px-10 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-lg font-semibold rounded-xl hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all duration-200 flex items-center shadow-lg hover:shadow-xl order-1 sm:order-2"
+                    className="px-10 py-4 bg-gradient-to-r from-orange-500 to-green-500 text-white text-lg font-semibold rounded-xl hover:from-green-300 hover:to-orange-500 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all duration-200 flex items-center shadow-lg hover:shadow-xl order-1 sm:order-2"
                   >
                     <FileText className="w-5 h-5 mr-3" />
                     Receive update
