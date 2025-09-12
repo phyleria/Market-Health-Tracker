@@ -9,6 +9,7 @@ export default function DashboardPage() {
 
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedReport, setSelectedReport] = useState(null);
 
   useEffect(() => {
     if (!email) return;
@@ -23,7 +24,7 @@ export default function DashboardPage() {
 
         const data = await res.json();
         if (res.ok) {
-          setReports(data);
+          setReports(data); // data is array of reports
         } else {
           console.error("❌ Error fetching reports:", data.error);
         }
@@ -39,48 +40,72 @@ export default function DashboardPage() {
 
   return (
     <div className="max-w-5xl mx-auto p-8">
-      <h1 className="text-2xl font-bold mb-6">Reports Dashboard</h1>
+      <h1 className="text-2xl font-bold mb-4">Reports Dashboard</h1>
 
-      {/* Notice about delay */}
+      {/* Info banner */}
       <div className="bg-blue-50 border border-blue-200 text-blue-700 p-3 rounded mb-6">
-        Reports usually appear here within ~1 minute of receiving your update email.
+        Reports may take up to <b>1 minute</b> to appear after you receive your update email.
       </div>
 
-      {/* Loading skeleton */}
-      {loading && (
-        <div className="space-y-4 animate-pulse">
-          <div className="h-4 bg-gray-300 rounded w-1/3"></div>
-          <div className="h-4 bg-gray-300 rounded w-2/3"></div>
-          <div className="h-4 bg-gray-300 rounded w-1/2"></div>
-        </div>
-      )}
+      {loading && <p>Loading reports...</p>}
 
-      {/* No reports yet */}
       {!loading && reports.length === 0 && (
-        <div className="text-center text-gray-500">
-          <p>No reports yet for <b>{email}</b>.</p>
-          <p className="text-sm mt-1">
-            Once your first update is processed (≈1 minute after the confirmation email), it will appear here.
-          </p>
-        </div>
+        <p>
+          No reports yet for <b>{email}</b>. Please check again in a minute after your confirmation email arrives.
+        </p>
       )}
 
-      {/* Reports list */}
       {!loading && reports.length > 0 && (
         <div className="grid gap-4">
           {reports.map((report, idx) => (
             <div
               key={idx}
-              className="p-6 bg-white rounded-xl shadow flex items-center gap-4"
+              className="p-6 bg-white rounded-xl shadow flex justify-between items-center"
             >
-              <FileText className="w-6 h-6 text-green-600" />
-              <div>
-                <p><b>Country:</b> {report.country}</p>
-                <p><b>Sector:</b> {report.sector}</p>
-                <p><b>Update:</b> {report.updateTitle}</p>
+              <div className="flex items-center gap-4">
+                <FileText className="w-6 h-6 text-green-600" />
+                <div>
+                  <p><b>Country:</b> {report.country}</p>
+                  <p><b>Sector:</b> {report.sector}</p>
+                  <p><b>Update:</b> {report.updateTitle}</p>
+                </div>
               </div>
+              <button
+                onClick={() => setSelectedReport(report)}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+              >
+                View
+              </button>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Modal for full details */}
+      {selectedReport && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-xl shadow max-w-lg w-full">
+            <h2 className="text-xl font-bold mb-4">{selectedReport.updateTitle}</h2>
+            <p className="mb-4">{selectedReport.updateText}</p>
+            {selectedReport.updateLink && (
+              <a
+                href={selectedReport.updateLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-green-600 underline"
+              >
+                Read more
+              </a>
+            )}
+            <div className="mt-6 flex justify-end">
+              <button
+                onClick={() => setSelectedReport(null)}
+                className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
+              >
+                Close
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
